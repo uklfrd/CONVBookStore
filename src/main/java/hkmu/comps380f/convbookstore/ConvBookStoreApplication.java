@@ -25,5 +25,28 @@ public class ConvBookStoreApplication extends HttpServlet {
     public static void main(String[] args) {
         SpringApplication.run(ConvBookStoreApplication.class, args);
     }
+    @Bean
+    public ConfigurableServletWebServerFactory configurableServletWebServerFactory() {
+        return new TomcatServletWebServerFactory() {
+            @Override
+            protected void postProcessContext(Context context) {
+                super.postProcessContext(context);
+                JspPropertyGroup jspPropertyGroup = new JspPropertyGroup();
+                jspPropertyGroup.addUrlPattern("*.jsp");
+                jspPropertyGroup.addUrlPattern("*.jspf");
+                jspPropertyGroup.setPageEncoding("UTF-8");
+                jspPropertyGroup.setScriptingInvalid("true");
+                jspPropertyGroup.addIncludePrelude("/WEB-INF/jsp/base.jspf");
+                jspPropertyGroup.setTrimWhitespace("true");
+                jspPropertyGroup.setDefaultContentType("text/html");
+                JspPropertyGroupDescriptorImpl jspPropertyGroupDescriptor
+                        = new JspPropertyGroupDescriptorImpl(jspPropertyGroup);
+                context.setJspConfigDescriptor(
+                        new JspConfigDescriptorImpl(
+                                Collections.singletonList(jspPropertyGroupDescriptor),
+                                Collections.emptyList()));
+            }
+        };
+    }
 }
 
