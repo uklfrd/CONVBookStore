@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Customer Support</title>
+    <title>Book List</title>
     <jsp:include page="header.jsp"></jsp:include>
 </head>
 <body>
@@ -14,10 +14,12 @@
     </c:when>
     <c:otherwise>
         <c:forEach items="${bookDatabase}" var="entry">
-            Book ${entry.key}:
-            <a href="<c:url value="/book/view/${entry.key}" />">
-                <c:out value="${entry.value.bookName}"/></a>
-            (Author: <c:out value="${entry.value.author}"/>)<br />
+            Book ${entry.id}:
+            <a href="<c:url value="/book/view/${entry.id}" />">
+                <c:out value="${entry.bookName}"/></a>
+            (Author: <c:out value="${entry.author}"/>)<br />
+            [<a href="<c:url value="/book/delete/${entry.id}" />">Delete</a>]<br />
+
         </c:forEach>
     </c:otherwise>
 </c:choose>

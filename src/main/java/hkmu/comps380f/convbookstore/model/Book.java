@@ -1,18 +1,33 @@
 package hkmu.comps380f.convbookstore.model;
 
+import jakarta.persistence.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Book {
-    private long id;
-    private String bookName;
-    private String author; //subject
-    private Float price;
-    private String description;//body
-    private Map<String, Attachment> attachments = new ConcurrentHashMap<>();
+// long id , String bookName, String author, Float price, String description
 
-    // Getters and Setters of id, customerName, subject, body (not attachments)
+@Entity
+public class Book {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "name")
+    private String bookName; // customerName
+    private String author; // subject
+    private Float price;
+    private String description; // body
+    @OneToMany(mappedBy = "book", fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<Attachment> attachments = new ArrayList<>();
+
+    // getters and setters of all properties
 
     public long getId() {
         return id;
@@ -54,16 +69,17 @@ public class Book {
         this.description = description;
     }
 
-    public Attachment getAttachment(String name) {
-        return this.attachments.get(name);
+    public List<Attachment> getAttachments() {
+        return attachments;
     }
-    public Collection<Attachment> getAttachments() {
-        return this.attachments.values();
+
+    public void setAttachments(List<Attachment> attachments) {
+        this.attachments = attachments;
     }
-    public void addAttachment(Attachment attachment) {
-        this.attachments.put(attachment.getId(), attachment);
-    }
-    public int getNumberOfAttachments() {
-        return this.attachments.size();
+
+    public void deleteAttachment(Attachment attachment) {
+        attachment.setBook(null);
+        this.attachments.remove(attachment);
     }
 }
+
