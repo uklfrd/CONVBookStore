@@ -16,9 +16,22 @@
     <nav class="navigation">
         <a href="<c:url value="/book" />">Home</a>
         <a href="<c:url value="/shoppingCart" />">Shopping Cart</a>
-        <button class="btnLogin-popup">Login</button>
+
+        <security:authorize access="!hasRole('ADMIN') && !hasRole('USER')">
+            <button class="btnLogin-popup">Login</button>
+        </security:authorize>
+
+        <security:authorize access="hasRole('ADMIN') || hasRole('USER')">
+        <c:url var="logoutUrl" value="/logout"/>
+        <form action="${logoutUrl}" method="post">
+            <input type="submit" value="Log out" />
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+        </form>
+        </security:authorize>
+
     </nav>
 </header>
 </body>
 </html>
+
 

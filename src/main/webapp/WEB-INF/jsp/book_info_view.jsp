@@ -6,7 +6,16 @@
 </head>
 <body>
 <h2>Book #${bookId}: <c:out value="${book.author}"/></h2>
-[<a href="<c:url value="/book/delete/${book.id}" />">Delete</a>]<br/><br/>
+
+<security:authorize access="hasRole('ADMIN') or
+ principal.username=='${book.author}'">
+    [<a href="<c:url value="/book/edit/${book.id}" />">Edit</a>]
+</security:authorize>
+<security:authorize access="hasRole('ADMIN')">
+    [<a href="<c:url value="/book/delete/${book.id}" />">Delete</a>]
+</security:authorize>
+<br/><br/>
+
 <i>Book Name - <c:out value="${book.bookName}"/></i><br/><br/>
 <c:out value="${book.author}"/><br/><br/>
 <c:out value="$${book.price}"/><br/><br/>

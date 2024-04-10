@@ -7,6 +7,7 @@ import hkmu.comps380f.convbookstore.model.Attachment;
 import hkmu.comps380f.convbookstore.model.Book;
 import hkmu.comps380f.convbookstore.view.DownloadingView;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,8 +90,8 @@ public class BookController {
     }
 
     @PostMapping("/create")
-    public View create(Form form) throws IOException {
-        long bookId = bService.createBook(form.getBookName(),
+    public View create(Form form, Principal principal) throws IOException {
+        long bookId = bService.createBook(principal.getName(),
                 form.getAuthor(), form.getPrice(), form.getDescription(), form.getAttachments());
         return new RedirectView("/book/view/" + bookId, true);
     }
@@ -127,6 +129,42 @@ public class BookController {
         bService.deleteAttachment(bookId, attachmentId);
         return "redirect:/book/view/" + bookId;
     }
+
+    @GetMapping("/edit/{bookId}")
+    public ModelAndView showEdit(@PathVariable("bookId") long bookId,
+                                 Principal principal, HttpServletRequest request)
+            throws BookNotFound {
+        Book book = bService.getBook(bookId);
+        if (book == null
+                || (!request.isUserInRole("ROLE_ADMIN")
+                && !principal.getName().equals(book.getAuthor()))) {
+            return new ModelAndView(new RedirectView("/book/list", true));
+        }
+        ModelAndView modelAndView = new ModelAndView("edit");
+        modelAndView.addObject("book", book);
+        Form bookForm = new Form();
+        bookForm.setBookName(book.getBookName());
+        bookForm.setAuthor(book.getAuthor());
+        bookForm.setPrice(book.getPrice());
+        bookForm.setDescription(book.getDescription());
+        modelAndView.addObject("bookForm", bookForm);
+        return modelAndView;
+    }
+    @PostMapping("/edit/{bookId}")
+    public String edit(@PathVariable("bookId") long bookId, Form form,
+                       Principal principal, HttpServletRequest request)
+            throws IOException, BookNotFound {
+        Book book = bService.getBook(bookId);
+        if (book == null
+                || (!request.isUserInRole("ROLE_ADMIN")
+                && !principal.getName().equals(book.getAuthor()))) {
+            return "redirect:/book/list";
+        }
+        bService.updateBook(bookId, form.getBookName(), form.getAuthor(), form.getPrice(),
+                form.getDescription(), form.getAttachments());
+        return "redirect:/book/view/" + bookId;
+    }
+
 
     @ExceptionHandler({BookNotFound.class, AttachmentNotFound.class})
     public ModelAndView error(Exception e) {

@@ -94,4 +94,31 @@ public class BookService {
         Book savedBook = bRepo.save(book);
         return savedBook.getId();
     }
+
+    @Transactional(rollbackFor = BookNotFound.class)
+    public void updateBook(long id, String bookName,String author, Float price,
+                             String description, List<MultipartFile> attachments)
+            throws IOException, BookNotFound {
+        Book updateBook = bRepo.findById(id).orElse(null);
+        if (updateBook == null) {
+            throw new BookNotFound(id);
+        }
+        updateBook.setBookName(bookName);
+        updateBook.setAuthor(author);
+        updateBook.setPrice(price);
+        updateBook.setDescription(description);
+        for (MultipartFile filePart : attachments) {
+            Attachment attachment = new Attachment();
+            attachment.setName(filePart.getOriginalFilename());
+            attachment.setMimeContentType(filePart.getContentType());
+            attachment.setContents(filePart.getBytes());
+            attachment.setBook(updateBook);
+            if (attachment.getName() != null && attachment.getName().length() > 0
+                    && attachment.getContents() != null
+                    && attachment.getContents().length > 0) {
+                updateBook.getAttachments().add(attachment);
+            }
+        }
+        bRepo.save(updateBook);
+    }
 }
