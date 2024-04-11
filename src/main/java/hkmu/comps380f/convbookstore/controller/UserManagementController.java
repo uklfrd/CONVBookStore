@@ -28,8 +28,8 @@ public class UserManagementController {
         private String username;
         private String password;
         private String[] roles;
-        // getters and setters for all properties
 
+        // getters and setters for all properties
         public String getUsername() {
             return username;
         }
@@ -53,6 +53,7 @@ public class UserManagementController {
         public void setRoles(String[] roles) {
             this.roles = roles;
         }
+
     }
 
     @GetMapping("/create")
@@ -68,7 +69,7 @@ public class UserManagementController {
     }
 
     @GetMapping("/delete/{username}")
-    public String deleteTicket(@PathVariable("username") String username) {
+    public String deleteUser(@PathVariable("username") String username) {
         umService.delete(username);
         return "redirect:/user/list";
     }

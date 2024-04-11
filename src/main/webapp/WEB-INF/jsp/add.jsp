@@ -17,6 +17,8 @@
     <form:textarea path="description" rows="5" cols="30"/><br/><br/>
     <b>Attachments</b><br/>
     <input type="file" name="attachments" multiple="multiple"/><br/><br/>
+    <form:label path="state">State</form:label><br/>
+    <form:input type="text" path="state"/><br/><br/>
     <input type="submit" value="Submit"/>
 </form:form>
 </body>

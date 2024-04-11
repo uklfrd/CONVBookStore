@@ -12,19 +12,20 @@ public class StoreUser {
     @Id
     private String username;
     private String password;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserRole> roles = new ArrayList<>();
     public StoreUser() {}
-    public StoreUser(String username, String password, String[] roles) {
+    public StoreUser(String username, String password, String[] roles ) {
         this.username = username;
         this.password = "{noop}" + password;
         for (String role : roles) {
             this.roles.add(new UserRole(this, role));
         }
     }
-    // getters and setters of all properties
 
+    // getters and setters of all properties
     public String getUsername() {
         return username;
     }

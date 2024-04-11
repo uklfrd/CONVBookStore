@@ -17,6 +17,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/user/**").hasRole("ADMIN")
+                        .requestMatchers("/user/create").hasRole("UNREG")
                         .requestMatchers("/book/delete/**").hasRole("ADMIN")
                         .requestMatchers("/book/**").hasAnyRole("USER", "ADMIN")
                         .anyRequest().permitAll()

@@ -72,13 +72,14 @@ public class BookService {
     }
     @Transactional
     public long createBook(String bookName, String author, Float price,
-                             String description, List<MultipartFile> attachments)
+                             String description, String state, List<MultipartFile> attachments)
             throws IOException {
         Book book = new Book();
         book.setBookName(bookName);
         book.setAuthor(author);
         book.setPrice(price);
         book.setDescription(description);
+        book.setState(state);
         for (MultipartFile filePart : attachments) {
             Attachment attachment = new Attachment();
             attachment.setName(filePart.getOriginalFilename());
@@ -97,7 +98,7 @@ public class BookService {
 
     @Transactional(rollbackFor = BookNotFound.class)
     public void updateBook(long id, String bookName,String author, Float price,
-                             String description, List<MultipartFile> attachments)
+                             String description, String state, List<MultipartFile> attachments)
             throws IOException, BookNotFound {
         Book updateBook = bRepo.findById(id).orElse(null);
         if (updateBook == null) {
@@ -107,6 +108,7 @@ public class BookService {
         updateBook.setAuthor(author);
         updateBook.setPrice(price);
         updateBook.setDescription(description);
+        updateBook.setState(state);
         for (MultipartFile filePart : attachments) {
             Attachment attachment = new Attachment();
             attachment.setName(filePart.getOriginalFilename());

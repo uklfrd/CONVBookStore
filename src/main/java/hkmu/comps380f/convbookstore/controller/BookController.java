@@ -1,13 +1,19 @@
 package hkmu.comps380f.convbookstore.controller;
 
 import hkmu.comps380f.convbookstore.dao.BookService;
+import hkmu.comps380f.convbookstore.dao.StoreUserService;
+import hkmu.comps380f.convbookstore.dao.UserManagementService;
 import hkmu.comps380f.convbookstore.exception.AttachmentNotFound;
 import hkmu.comps380f.convbookstore.exception.BookNotFound;
 import hkmu.comps380f.convbookstore.model.Attachment;
 import hkmu.comps380f.convbookstore.model.Book;
 import hkmu.comps380f.convbookstore.view.DownloadingView;
 import jakarta.annotation.Resource;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.eclipse.tags.shaded.org.apache.xpath.operations.Bool;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -20,19 +26,68 @@ import org.springframework.web.servlet.view.RedirectView;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Controller
 @RequestMapping("/book")
 public class BookController {
+
     @Resource
     private BookService bService;
-    // Controller methods, Form-backing object, ...
 
+    // Controller methods, Form-backing object, ...
     @GetMapping(value = {"", "/list"})
-    public String list(ModelMap model) {
+    public String list(HttpServletRequest request, HttpSession session, ModelMap model) {
+
+        String action = request.getParameter("action");
+        if (action == null)
+            action = "browse";
+
+        switch (action) {
+            case "addToCart":
+                return addToCart(request, session);
+            case "viewCart":
+                return viewCart(model);
+            case "browse":
+            default:
+                return browse(model);
+        }
+    }
+    // Defining other methods ...
+    private String viewCart(ModelMap model) {
+        model.addAttribute("bookDatabase", bService.getBooks());
+        return "viewCart";
+    }
+    private String browse(ModelMap model) {
         model.addAttribute("bookDatabase", bService.getBooks());
         return "productbooklist";
+    }
+    private String addToCart(HttpServletRequest request, HttpSession session) {
+        // from the browse that .jsp have a <a> ... value="addToCart"
+        int productId;
+        // if cannot get any productID, that will go back to the book list page
+        // else go to cart
+        try {
+            productId = Integer.parseInt(request.getParameter("productId"));
+        } catch (Exception e) {
+            return  "redirect:/book/list";
+        }
+
+        // if Attribute cart have not been created, create it
+        if (session.getAttribute("cart") == null)
+            session.setAttribute("cart", new ConcurrentHashMap<>());
+
+        @SuppressWarnings("unchecked")
+        Map<Integer, Integer> cart
+                = (Map<Integer, Integer>) session.getAttribute("cart");
+
+        // if the productId = 0  or Null
+        if (!cart.containsKey(productId))
+            cart.put(productId, 0);
+        cart.put(productId, cart.get(productId) + 1);
+        return "redirect:/book?action=viewCart";
     }
 
     @GetMapping("/create")
@@ -44,6 +99,7 @@ public class BookController {
         private String author;
         private Float price;
         private String description;
+        private String state;
         private List<MultipartFile> attachments;
 
         // Getters and Setters of customerName, subject, body, attachments
@@ -80,6 +136,14 @@ public class BookController {
             this.description = description;
         }
 
+        public String getState() {
+            return state;
+        }
+
+        public void setState(String state) {
+            this.state = state;
+        }
+
         public List<MultipartFile> getAttachments() {
             return attachments;
         }
@@ -92,7 +156,7 @@ public class BookController {
     @PostMapping("/create")
     public View create(Form form, Principal principal) throws IOException {
         long bookId = bService.createBook(principal.getName(),
-                form.getAuthor(), form.getPrice(), form.getDescription(), form.getAttachments());
+                form.getAuthor(), form.getPrice(), form.getDescription(), form.getState(), form.getAttachments());
         return new RedirectView("/book/view/" + bookId, true);
     }
 
@@ -147,6 +211,7 @@ public class BookController {
         bookForm.setAuthor(book.getAuthor());
         bookForm.setPrice(book.getPrice());
         bookForm.setDescription(book.getDescription());
+        bookForm.setState(book.getState());
         modelAndView.addObject("bookForm", bookForm);
         return modelAndView;
     }
@@ -161,7 +226,7 @@ public class BookController {
             return "redirect:/book/list";
         }
         bService.updateBook(bookId, form.getBookName(), form.getAuthor(), form.getPrice(),
-                form.getDescription(), form.getAttachments());
+                form.getDescription(), form.getState(), form.getAttachments());
         return "redirect:/book/view/" + bookId;
     }
 
@@ -170,6 +235,5 @@ public class BookController {
     public ModelAndView error(Exception e) {
         return new ModelAndView("error", "message", e.getMessage());
     }
-
 
 }

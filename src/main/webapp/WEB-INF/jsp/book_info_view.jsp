@@ -5,7 +5,7 @@
     <jsp:include page="header.jsp"></jsp:include>
 </head>
 <body>
-<h2>Book #${bookId}: <c:out value="${book.author}"/></h2>
+<h2>Book #${bookId}: <c:out value="${book.bookName}"/></h2>
 
 <security:authorize access="hasRole('ADMIN') or
  principal.username=='${book.author}'">
@@ -27,10 +27,16 @@
         <a href="<c:url value="/book/${bookId}/attachment/${attachment.id}" />">
             <c:out value="${attachment.name}"/></a>
         [<a href="<c:url value="/book/${bookId}/delete/${attachment.id}" />">Delete</a>]
-        [<a href="<c:url value="/book/delete/${book.id}" />">Delete</a>]<br/><br/>
+
     </c:forEach><br/><br/>
 </c:if>
+In-stock:<c:out value="${book.state}"/><br/><br/>
+
+[<a href="<c:url value="/book">
+                   <c:param name="action" value="addToCart" />
+                   <c:param name="productId" value="${book.id}" />
+                </c:url>">AddToCart</a>]
+
 <a href="<c:url value="/book" />">Return to list books</a>
-<button class="btnAddToShoppingCart-popup">Add to Shopping Cart</button>
 </body>
 </html>

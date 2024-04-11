@@ -10,21 +10,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-// long id , String bookName, String author, Float price, String description
-
 @Entity
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "name")
-    private String bookName; // customerName
-    private String author; // subject
+    private String bookName;
+    private String author;
     private Float price;
-    private String description; // body
+    private String description;
+    private String state;
     @OneToMany(mappedBy = "book", fetch = FetchType.EAGER,
             cascade = CascadeType.ALL, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
+
     private List<Attachment> attachments = new ArrayList<>();
 
     // getters and setters of all properties
@@ -67,6 +67,14 @@ public class Book {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
     }
 
     public List<Attachment> getAttachments() {

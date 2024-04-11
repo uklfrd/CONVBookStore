@@ -1,3 +1,4 @@
+<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
 <%--
   Created by IntelliJ IDEA.
   User: ivanlee
@@ -8,17 +9,28 @@
 <html>
 <head>
     <title>Header</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="/resources/css/style.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 <header>
     <h1 class="Logo">CONVBookStore</h1>
     <nav class="navigation">
         <a href="<c:url value="/book" />">Home</a>
-        <a href="<c:url value="/shoppingCart" />">Shopping Cart</a>
+
+        <security:authorize access="hasRole('USER')">
+        <a href="<c:url value="/book?action=viewCart" />">Shopping Cart</a>
+        </security:authorize>
+        <security:authorize access="hasRole('ADMIN') || hasRole('USER')">
+        <a href="<c:url value="/book/create" />">Create a book sell</a><br/><br/>
+        </security:authorize>
 
         <security:authorize access="!hasRole('ADMIN') && !hasRole('USER')">
             <button class="btnLogin-popup">Login</button>
+            <a href="<c:url value="/user/create" />">Sign Up</a><br /><br />
+        </security:authorize>
+
+        <security:authorize access="hasRole('ADMIN')">
+            <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
         </security:authorize>
 
         <security:authorize access="hasRole('ADMIN') || hasRole('USER')">

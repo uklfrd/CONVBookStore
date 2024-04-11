@@ -7,10 +7,6 @@
 <body>
 <h2>Books</h2>
 
-<security:authorize access="hasRole('ADMIN')">
-    <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
-</security:authorize>
-
 <a href="<c:url value="/book/create" />">Create a book sell</a><br/><br/>
 <c:choose>
     <c:when test="${fn:length(bookDatabase) == 0}">
@@ -22,6 +18,12 @@
             <a href="<c:url value="/book/view/${entry.id}" />">
                 <c:out value="${entry.bookName}"/></a>
             (Author: <c:out value="${entry.author}"/>)<br />
+            In-stock: <c:out value="${entry.state}"/> <br />
+
+            [<a href="<c:url value="/book">
+                   <c:param name="action" value="addToCart" />
+                   <c:param name="productId" value="${entry.id}" />
+                </c:url>">AddToCart</a>]
 
             <security:authorize access="hasRole('ADMIN') or
  principal.username=='${entry.author}'">
