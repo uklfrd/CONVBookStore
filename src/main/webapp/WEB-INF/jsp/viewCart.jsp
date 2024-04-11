@@ -20,8 +20,8 @@
     </c:when>
     <c:otherwise>
         <ul>
-            <c:forEach items="${cart}" var="cartItem" >
-                <li>${products[cartItem.key]} (qty: ${cartItem.value})</li>
+            <c:forEach items="${bookDatabase}" var="cartItem" >
+                <li>${cartItem.bookName} (qty: 1)</li>
             </c:forEach>
         </ul>
     </c:otherwise>

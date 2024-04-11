@@ -83,7 +83,7 @@ public class BookController {
         Map<Integer, Integer> cart
                 = (Map<Integer, Integer>) session.getAttribute("cart");
 
-        // if the productId = 0  or Null
+        // if the productId = Null
         if (!cart.containsKey(productId))
             cart.put(productId, 0);
         cart.put(productId, cart.get(productId) + 1);
