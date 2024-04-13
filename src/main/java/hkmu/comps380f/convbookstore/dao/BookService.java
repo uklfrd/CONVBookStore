@@ -24,6 +24,8 @@ public class BookService {
     public List<Book> getBooks() {
         return bRepo.findAll();
     }
+
+
     @Transactional
     public Book getBook(long id)
             throws BookNotFound {

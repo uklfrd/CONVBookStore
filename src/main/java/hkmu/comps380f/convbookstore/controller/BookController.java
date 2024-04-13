@@ -1,19 +1,14 @@
 package hkmu.comps380f.convbookstore.controller;
 
 import hkmu.comps380f.convbookstore.dao.BookService;
-import hkmu.comps380f.convbookstore.dao.StoreUserService;
-import hkmu.comps380f.convbookstore.dao.UserManagementService;
 import hkmu.comps380f.convbookstore.exception.AttachmentNotFound;
 import hkmu.comps380f.convbookstore.exception.BookNotFound;
 import hkmu.comps380f.convbookstore.model.Attachment;
 import hkmu.comps380f.convbookstore.model.Book;
 import hkmu.comps380f.convbookstore.view.DownloadingView;
 import jakarta.annotation.Resource;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import org.eclipse.tags.shaded.org.apache.xpath.operations.Bool;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -47,9 +42,11 @@ public class BookController {
 
         switch (action) {
             case "addToCart":
-                return addToCart(request, session);
+                return addToCart(model, request, session);
             case "viewCart":
                 return viewCart(model);
+            case "emptyCart":
+                return emptyCart(session);
             case "browse":
             default:
                 return browse(model);
@@ -64,9 +61,14 @@ public class BookController {
         model.addAttribute("bookDatabase", bService.getBooks());
         return "productbooklist";
     }
-    private String addToCart(HttpServletRequest request, HttpSession session) {
+    private String addToCart(ModelMap model, HttpServletRequest request, HttpSession session){
         // from the browse that .jsp have a <a> ... value="addToCart"
+        model.addAttribute("bookDatabase", bService.getBooks());
         int productId;
+
+        Book book = new Book();
+        book.setBookName(book.getBookName());
+
         // if cannot get any productID, that will go back to the book list page
         // else go to cart
         try {
@@ -87,6 +89,11 @@ public class BookController {
         if (!cart.containsKey(productId))
             cart.put(productId, 0);
         cart.put(productId, cart.get(productId) + 1);
+
+        return "redirect:/book?action=viewCart";
+    }
+    private String emptyCart(HttpSession session) {
+        session.removeAttribute("cart");
         return "redirect:/book?action=viewCart";
     }
 

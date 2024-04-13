@@ -17,15 +17,21 @@
 <c:choose>
     <c:when test="${empty cart}">
         Your cart is empty
+        <br />
     </c:when>
     <c:otherwise>
         <ul>
-            <c:forEach items="${bookDatabase}" var="cartItem" >
-                <li>${cartItem.bookName} (qty: 1)</li>
+            <c:forEach items="${cart}" var="cartItem" >
+                <li>Book ID: ${cartItem.key} (qty: ${cartItem.value})</li>
             </c:forEach>
         </ul>
     </c:otherwise>
 </c:choose>
+<a href="<c:url value="/book?action=emptyCart" />">Empty Cart</a><br/><br/>
 <a href="<c:url value="/book" />">back to the Book List</a><br/><br/>
 </body>
+
+<script>
+
+</script>
 </html>
