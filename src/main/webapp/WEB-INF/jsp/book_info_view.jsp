@@ -8,7 +8,7 @@
 <h2>Book #${bookId}: <c:out value="${book.bookName}"/></h2>
 
 <security:authorize access="hasRole('ADMIN') or
- principal.username=='${book.author}'">
+ principal.username=='${book.uploader}'">
     [<a href="<c:url value="/book/edit/${book.id}" />">Edit</a>]
 </security:authorize>
 <security:authorize access="hasRole('ADMIN')">
@@ -18,12 +18,14 @@
 
 <i>Book Name - <c:out value="${book.bookName}"/></i><br/><br/>
 <c:out value="${book.author}"/><br/><br/>
+<c:out value="${book.uploader}"/><br/><br/>
 <c:out value="$${book.price}"/><br/><br/>
 <c:out value="${book.description}"/><br/><br/>
 <c:if test="${!empty book.attachments}">
     Attachments:
     <c:forEach items="${book.attachments}" var="attachment" varStatus="status">
         <c:if test="${!status.first}">, </c:if>
+        <img src="<c:url value="/book/${bookId}/attachment/${attachment.id}" />"  width="500" height="333">
         <a href="<c:url value="/book/${bookId}/attachment/${attachment.id}" />">
             <c:out value="${attachment.name}"/></a>
         [<a href="<c:url value="/book/${bookId}/delete/${attachment.id}" />">Delete</a>]

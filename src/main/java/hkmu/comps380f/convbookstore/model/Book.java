@@ -18,6 +18,7 @@ public class Book {
     @Column(name = "name")
     private String bookName;
     private String author;
+    private String uploader;
     private Float price;
     private String description;
     private String state;
@@ -51,6 +52,14 @@ public class Book {
 
     public void setAuthor(String author) {
         this.author = author;
+    }
+
+    public String getUploader() {
+        return uploader;
+    }
+
+    public void setUploader(String uploader) {
+        this.uploader = uploader;
     }
 
     public Float getPrice() {

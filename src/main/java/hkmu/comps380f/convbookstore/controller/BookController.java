@@ -104,6 +104,7 @@ public class BookController {
     public static class Form {
         private String bookName;
         private String author;
+        private String uploader;
         private Float price;
         private String description;
         private String state;
@@ -125,6 +126,14 @@ public class BookController {
 
         public void setAuthor(String author) {
             this.author = author;
+        }
+
+        public String getUploader() {
+            return uploader;
+        }
+
+        public void setUploader(String uploader) {
+            this.uploader = uploader;
         }
 
         public Float getPrice() {
@@ -161,9 +170,9 @@ public class BookController {
     }
 
     @PostMapping("/create")
-    public View create(Form form, Principal principal) throws IOException {
-        long bookId = bService.createBook(principal.getName(),
-                form.getAuthor(), form.getPrice(), form.getDescription(), form.getState(), form.getAttachments());
+    public View create(Form form) throws IOException {
+        long bookId = bService.createBook(form.getBookName(),
+                form.getAuthor(), form.getUploader(), form.getPrice(), form.getDescription(), form.getState(), form.getAttachments());
         return new RedirectView("/book/view/" + bookId, true);
     }
 
@@ -208,7 +217,7 @@ public class BookController {
         Book book = bService.getBook(bookId);
         if (book == null
                 || (!request.isUserInRole("ROLE_ADMIN")
-                && !principal.getName().equals(book.getAuthor()))) {
+                && !principal.getName().equals(book.getUploader()))) {
             return new ModelAndView(new RedirectView("/book/list", true));
         }
         ModelAndView modelAndView = new ModelAndView("edit");
@@ -216,6 +225,7 @@ public class BookController {
         Form bookForm = new Form();
         bookForm.setBookName(book.getBookName());
         bookForm.setAuthor(book.getAuthor());
+        bookForm.setUploader(book.getUploader());
         bookForm.setPrice(book.getPrice());
         bookForm.setDescription(book.getDescription());
         bookForm.setState(book.getState());
@@ -229,10 +239,10 @@ public class BookController {
         Book book = bService.getBook(bookId);
         if (book == null
                 || (!request.isUserInRole("ROLE_ADMIN")
-                && !principal.getName().equals(book.getAuthor()))) {
+                && !principal.getName().equals(book.getUploader()))) {
             return "redirect:/book/list";
         }
-        bService.updateBook(bookId, form.getBookName(), form.getAuthor(), form.getPrice(),
+        bService.updateBook(bookId, form.getBookName(), form.getAuthor(), form.getUploader(), form.getPrice(),
                 form.getDescription(), form.getState(), form.getAttachments());
         return "redirect:/book/view/" + bookId;
     }

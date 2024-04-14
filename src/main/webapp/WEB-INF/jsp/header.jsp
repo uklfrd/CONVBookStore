@@ -1,12 +1,54 @@
-<%@ taglib prefix="security" uri="http://www.springframework.org/security/tags" %>
-<%--
-  Created by IntelliJ IDEA.
-  User: ivanlee
-  Date: 5/4/2024
-  Time: 13:24
-  To change this template use File | Settings | File Templates.
---%>
 <html>
+<%--
+<style>
+
+    header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        padding: 20px 100px;
+        background: dodgerblue;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 99;
+    }
+
+    .Logo{
+        font-size: 2em;
+        color: #ffffff;
+        user-select: none;
+    }
+
+    .navigation a {
+        position: relative;
+        font-size: 1.5em;
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 500;
+        margin-left: 40px;
+    }
+
+    .navigation a:after {
+        content: ' ';
+        position: absolute;
+        left: 0;
+        bottom: -6px;
+        width: 100%;
+        height: 3px;
+        background: #ffffff;
+        border-radius: 5px;
+        transform: scaleX(0);
+        transition: transform 0.5s;
+    }
+
+    .navigation a:hover:after {
+        transform: scaleX(1);
+    }
+
+</style>
+--%>
 <head>
     <title>Header</title>
     <link href="/resources/css/style.css" rel="stylesheet" type="text/css">
@@ -18,19 +60,19 @@
         <a href="<c:url value="/book" />">Home</a>
 
         <security:authorize access="hasRole('USER')">
-        <a href="<c:url value="/book?action=viewCart" />">Shopping Cart</a>
-        </security:authorize>
-        <security:authorize access="hasRole('ADMIN') || hasRole('USER')">
-        <a href="<c:url value="/book/create" />">Create a book sell</a><br/><br/>
+        <a href="<c:url value="/book?action=viewCart" />">Cart</a>
         </security:authorize>
 
-        <security:authorize access="!hasRole('ADMIN') && !hasRole('USER')">
-            <button class="btnLogin-popup">Login</button>
-            <a href="<c:url value="/user/create" />">Sign Up</a><br /><br />
+        <security:authorize access="hasRole('ADMIN') || hasRole('USER')">
+        <a href="<c:url value="/book/create" />">Create sell</a><br/>
         </security:authorize>
 
         <security:authorize access="hasRole('ADMIN')">
-            <a href="<c:url value="/user" />">Manage User Accounts</a><br /><br />
+            <a href="<c:url value="/user" />">User</a>
+        </security:authorize>
+
+        <security:authorize access="!hasRole('ADMIN') && !hasRole('USER')">
+            <a href="<c:url value="/user/create" />">Sign Up</a>
         </security:authorize>
 
         <security:authorize access="hasRole('ADMIN') || hasRole('USER')">
@@ -40,6 +82,14 @@
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         </form>
         </security:authorize>
+        <security:authorize access="hasRole('UNREG')">
+            <c:url var="logoutUrl" value="/logout"/>
+            <form action="${logoutUrl}" method="post">
+                <input type="submit" value="Guset Log out" />
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
+        </security:authorize>
+
 
     </nav>
 </header>

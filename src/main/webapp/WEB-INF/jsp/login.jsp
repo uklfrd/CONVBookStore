@@ -27,6 +27,14 @@
     <label for="remember-me">Remember me</label><br/><br/>
     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     <input type="submit" value="Log In"/>
+
+</form>
+<c:url var="loginUrl" value="/login"/>
+
+<p>If you are GUSET, can use this Username & password:</p><br/>
+<p>Username: anyone</p><br/>
+<p>password: anyonepw</p><br/>
+
 </form>
 </body>
 </html>

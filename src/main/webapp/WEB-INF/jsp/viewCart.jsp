@@ -22,7 +22,9 @@
     <c:otherwise>
         <ul>
             <c:forEach items="${cart}" var="cartItem" >
-                <li>Book ID: ${cartItem.key} (qty: ${cartItem.value})</li>
+                <li>Book ID: ${cartItem.key} (qty: ${cartItem.value})
+                    [<a href="<c:url value="/book/view/${cartItem.key}" />">book information</a>]
+                </li>
             </c:forEach>
         </ul>
     </c:otherwise>
@@ -30,8 +32,4 @@
 <a href="<c:url value="/book?action=emptyCart" />">Empty Cart</a><br/><br/>
 <a href="<c:url value="/book" />">back to the Book List</a><br/><br/>
 </body>
-
-<script>
-
-</script>
 </html>
